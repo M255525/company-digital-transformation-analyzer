@@ -407,7 +407,7 @@ footer .disclaimer a{color:#9FE3DA;}
 <section>
   <div class="wrap">
     <h2 class="section-title">快速範例（產業情境）</h2>
-    <div class="section-lead"><p>挑一個最接近你公司的產業，點一下套用整組資料，再改成你們實際的部門與流程；找不到就按最後的「＋ 新增我的公司」。</p><details class="lead-more"><summary>更多說明</summary><p>十組常見產業的虛構情境（會計師事務所、貿易、製造、零售、餐飲、物流、診所、補習班、電商、營建），涵蓋「數位化健康基準」「Excel 與 Email 作業多、速贏機會多」「紙本作業多、需要投資系統」「系統訂閱疊太多、年費高於省下的人力成本」「投資大、回收期長」等狀況。挑一個最接近的產業套用整組資料，再改成你們公司的實際情況。<strong>找不到你的產業？</strong>按最後的「＋ 新增我的公司」建立自己的版本，之後隨時可以儲存修改、再點一下載入。</p></details></div>
+    <div class="section-lead"><p>挑一個最接近你公司的產業，點一下套用整組資料，再改成你們實際的部門與流程；找不到就按最後的「＋ 新增我的公司」。</p><details class="lead-more"><summary>更多說明</summary><p>十一組常見產業的虛構情境（會計師事務所、貿易、製造、零售、餐飲、物流、診所、補習班、辦訓單位、電商、營建），涵蓋「數位化健康基準」「Excel 與 Email 作業多、速贏機會多」「紙本作業多、需要投資系統」「系統訂閱疊太多、年費高於省下的人力成本」「投資大、回收期長」等狀況。挑一個最接近的產業套用整組資料，再改成你們公司的實際情況。<strong>找不到你的產業？</strong>按最後的「＋ 新增我的公司」建立自己的版本，之後隨時可以儲存修改、再點一下載入。</p></details></div>
     <div class="preset-row" id="presetRow"></div>
     <div class="custom-bar" id="customBar"></div>
     <div class="custom-panel" id="customPanel" hidden>
@@ -885,6 +885,20 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
         {"id": "t4", "name": "家長溝通回覆", "categoryId": "cat3", "people": 4, "freq": 40, "minutes": 4, "level": 1, "potential": 40, "difficulty": 1, "tool": "官方帳號＋常見問答", "toolCost": 800, "setupCost": 0, "learnHours": 2},
         {"id": "t5", "name": "招生活動報名", "categoryId": "cat1", "people": 2, "freq": 5, "minutes": 20, "level": 2, "potential": 60, "difficulty": 1, "tool": "線上報名表", "toolCost": 0, "setupCost": 0, "learnHours": 1},
         {"id": "t6", "name": "排課", "categoryId": "cat2", "people": 1, "freq": 1, "minutes": 180, "level": 1, "potential": 60, "difficulty": 3, "tool": "排課系統", "toolCost": 1000, "setupCost": 20000, "learnHours": 4}
+      ]}},
+    {"id": "training", "emoji": "🎓", "label": "辦訓單位", "blurb": "報名審查、簽到、補助請款核銷靠紙本與 Excel，線上報名與 QR 簽到就是速贏。", "overrides":{
+      "monthlySalary": 46000, "monthlyHours": 176, "employees": 12, "weeklyStdHours": 40, "alertHours": 5, "capEnabled": true, "toolBudget": 150000,
+      "skills":{"strategy": 2, "process": 3, "cloud": 3, "data": 2, "auto": 1, "security": 3, "people": 3, "customer": 2},
+      "categories":[{"id": "cat1", "name": "計畫申請", "targetPct": 60}, {"id": "cat2", "name": "招生學員服務", "targetPct": 65}, {"id": "cat3", "name": "教務行政", "targetPct": 60}, {"id": "cat4", "name": "經費核銷", "targetPct": 65}],
+      "tasks":[
+        {"id": "t1", "name": "計畫書撰寫與送審", "categoryId": "cat1", "people": 2, "freq": 1, "minutes": 240, "level": 1, "potential": 40, "difficulty": 3, "tool": "計畫書範本庫＋AI 草稿", "toolCost": 600, "setupCost": 0, "learnHours": 6},
+        {"id": "t2", "name": "學員報名資格審查", "categoryId": "cat2", "people": 2, "freq": 15, "minutes": 15, "level": 1, "potential": 60, "difficulty": 2, "tool": "線上報名表＋資格自動檢核", "toolCost": 800, "setupCost": 20000, "learnHours": 3},
+        {"id": "t3", "name": "繳費確認與錄取通知", "categoryId": "cat2", "people": 1, "freq": 20, "minutes": 10, "level": 0, "potential": 75, "difficulty": 1, "tool": "線上繳費＋錄取自動通知", "toolCost": 500, "setupCost": 0, "learnHours": 2},
+        {"id": "t4", "name": "上課簽到退與出席統計", "categoryId": "cat3", "people": 2, "freq": 10, "minutes": 20, "level": 0, "potential": 70, "difficulty": 1, "tool": "QR 簽到＋出席率自動統計", "toolCost": 800, "setupCost": 0, "learnHours": 1},
+        {"id": "t5", "name": "講師排課與聯繫", "categoryId": "cat3", "people": 1, "freq": 5, "minutes": 30, "level": 1, "potential": 50, "difficulty": 2, "tool": "共用排課表＋自動提醒", "toolCost": 0, "setupCost": 0, "learnHours": 2},
+        {"id": "t6", "name": "滿意度問卷與統計", "categoryId": "cat3", "people": 1, "freq": 2, "minutes": 60, "level": 1, "potential": 70, "difficulty": 1, "tool": "線上問卷＋自動圖表", "toolCost": 0, "setupCost": 0, "learnHours": 1},
+        {"id": "t7", "name": "補助經費請款核銷", "categoryId": "cat4", "people": 2, "freq": 2, "minutes": 180, "level": 1, "potential": 50, "difficulty": 4, "tool": "核銷系統＋單據掃描歸檔", "toolCost": 1500, "setupCost": 60000, "learnHours": 8},
+        {"id": "t8", "name": "結訓證書與成果報告", "categoryId": "cat3", "people": 1, "freq": 2, "minutes": 90, "level": 1, "potential": 60, "difficulty": 2, "tool": "證書自動產生＋報告範本", "toolCost": 0, "setupCost": 10000, "learnHours": 3}
       ]}},
     {"id": "ecommerce", "emoji": "🛒", "label": "電商品牌", "blurb": "自動化程度最高，但系統訂閱疊太多：年費超過預算，也高於省下的人力成本。", "overrides":{
       "monthlySalary": 55000, "monthlyHours": 176, "employees": 22, "weeklyStdHours": 40, "alertHours": 6, "capEnabled": true, "toolBudget": 200000,
