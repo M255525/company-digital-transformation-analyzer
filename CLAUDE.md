@@ -58,4 +58,6 @@
 
 ## 部署
 
-尚未部署。`.github/workflows/deploy-pages.yml` 已就緒（Actions 模式），等使用者同意後再建公開 repo 並推送。
+2026-10-07 依使用者指示推公開 repo <https://github.com/M255525/company-digital-transformation-analyzer>，GitHub Pages（Actions workflow 模式，push 到 master 自動部署）：<https://m255525.github.io/company-digital-transformation-analyzer/>。
+
+踩坑：這次先開 Pages 再推第一個 commit，`github-pages` environment 的部署分支規則只預設允許 `main`，push 觸發的部署被拒（"Branch master is not allowed to deploy"）。已用 `gh api -X POST repos/<repo>/environments/github-pages/deployment-branch-policies -f name=master -f type=branch` 補上 master。
