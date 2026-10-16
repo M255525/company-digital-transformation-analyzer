@@ -129,6 +129,8 @@ section.alt .field{background:#fff;}
 .value-explain>summary .ve-hint{font-size:.74rem;font-weight:400;color:var(--ink-soft);}
 .value-explain[open]>summary .ve-hint{display:none;}
 .value-explain[open]>summary{margin-bottom:8px;}
+.calc-explain{margin:0 0 14px;}
+.calc-explain>summary{flex-wrap:wrap;row-gap:2px;}
 .value-explain p{margin:0 0 12px;font-size:.86rem;color:var(--ink-soft);}
 .value-examples{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:10px;}
 .value-ex{background:var(--brand-soft);border-radius:8px;padding:10px 12px;font-size:.8rem;color:var(--ink);}
@@ -259,6 +261,8 @@ section.alt .panel-box{background:#fff;}
 .flow-row .flow-track{height:14px;border-radius:7px;background:#E3ECEE;overflow:hidden;}
 .flow-row .flow-fill{display:block;height:100%;border-radius:7px;}
 .flow-row .flow-val{text-align:right;font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft);white-space:nowrap;}
+.flow-explain{font-size:.8rem;color:var(--ink-soft);margin:-4px 0 12px;}
+.flow-row.flow-total{border-top:1px dashed var(--line);padding-top:8px;}
 .flow-note{font-size:.76rem;color:var(--ink-soft);margin-top:12px;}
 
 /* ---------- Category bars ---------- */
@@ -620,8 +624,8 @@ footer .disclaimer a{color:#9FE3DA;}
       <ul class="verify-list" id="verifyList"></ul>
     </div>
     <div class="kpi-grid" id="kpiGrid"></div>
-    <div class="panel-box" style="margin-bottom:22px;">
-      <h3>人力成本價值與投資回收是怎麼算的？</h3>
+    <details class="value-explain calc-explain">
+      <summary>人力成本價值與投資回收是怎麼算的？<span class="ve-hint">點開看 7 步驟：可釋放人時 → 每年 → × 人時成本 → 扣系統年費 → 一次性投入 → 回收期 → 三年淨效益</span></summary>
       <div class="tv-steps" id="tvSteps"></div>
       <details class="lead-more"><summary>這些數字可以怎麼用？</summary>
       <ul class="tv-uses">
@@ -630,10 +634,24 @@ footer .disclaimer a{color:#9FE3DA;}
         <li><strong>規劃人力再配置：</strong>釋放的人力最好轉到開發客戶、品質改善或承接更多訂單；如果只是被更多雜事填滿，效益就只停留在帳面上。</li>
       </ul>
       </details>
-    </div>
+    </details>
+    <details class="value-explain calc-explain" style="margin-bottom:22px;">
+      <summary>數位成熟度指數是怎麼算出來的？<span class="ve-hint">點開看：流程數位化程度 × 60%＋組織評估 × 40%</span></summary>
+      <div class="tv-steps" id="msSteps"></div>
+      <details class="lead-more"><summary>為什麼是 60%／40%？怎麼提高分數？</summary>
+      <ul class="tv-uses">
+        <li><strong>流程占 60%：</strong>反映公司「實際上怎麼做事」——每週的作業人時有多少已經用雲端、系統或自動化完成。這是營運面的客觀紀錄，所以權重較高。</li>
+        <li><strong>組織評估占 40%：</strong>反映公司「有沒有條件做」——策略、資料、資安、員工技能等基礎是往上升級的前提，但有制度不等於有落實，而且評分較主觀，所以權重較低。</li>
+        <li><strong>流程分數為什麼要用人時加權：</strong>一條每週耗 20 人時的流程，比一條每週 1 人時的流程更能代表公司的工作方式；直接平均等級會讓小流程左右結果。</li>
+        <li><strong>還沒有流程時：</strong>只用組織評估計算（組織分數＝指數）。</li>
+        <li id="msLever"></li>
+      </ul>
+      </details>
+    </details>
     <div class="results-columns">
       <div class="panel-box">
-        <h3>每 100 人時的去向（週）</h3>
+        <h3>每 100 人時的去向（週，按比例換算）</h3>
+        <p class="flow-explain" id="flowExplain"></p>
         <div class="flow-list" id="flowList"></div>
         <p class="flow-note">比例皆以每週流程總人時為分母。「可釋放」依數位化優先矩陣分成四類；「需保留的人工時間」是需要專業判斷、對客溝通或已經無法再省的部分。</p>
       </div>
@@ -1294,6 +1312,30 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
       {n:"7", f:"<strong>三年淨效益</strong>：年度淨效益 × 3 − 一次性投入", v:fmtMoney(t.threeYear), cls: t.threeYear >= 0 ? "tv-total" : "tv-neg"}
     ];
   }
+  // 數位成熟度指數計算步驟（網頁儀表板與 PDF 報告共用）
+  function maturitySteps(t){
+    var steps = [];
+    if(t.taskPct != null){
+      steps.push({n:"1", f:"<strong>流程數位化程度</strong>：每條流程「週人時 × 等級 ÷ 4」加總 " + t.digitalHours.toFixed(1) + " 人時 ÷ 流程週人時 " + fmtH(t.weeklyHours) + "（人時加權平均等級 " + (t.taskPct / 25).toFixed(1) + "，等級 0＝0%、2＝50%、4＝100%）", v:fmtPct(t.taskPct)});
+    }
+    steps.push({n:"2", f:"<strong>組織評估分數</strong>：8 構面平均 " + t.skillAvg.toFixed(2) + " 分，換算（平均 − 1）÷ 4（1 分＝0%、3 分＝50%、5 分＝100%）", v:fmtPct(t.skillPct)});
+    if(t.taskPct != null){
+      steps.push({n:"3", f:"<strong>加權合計</strong>：流程 " + fmtPct(t.taskPct) + " × 60%＝" + (t.taskPct * 0.6).toFixed(1) + "，組織 " + fmtPct(t.skillPct) + " × 40%＝" + (t.skillPct * 0.4).toFixed(1) + "，相加", v:t.maturity.toFixed(0) + " / 100", key:"maturity", cls:"tv-total"});
+    } else {
+      steps.push({n:"3", f:"<strong>尚未加入流程</strong>：只用組織評估分數當指數", v:t.maturity.toFixed(0) + " / 100", key:"maturity", cls:"tv-total"});
+    }
+    steps.push({n:"4", f:"<strong>判定等級</strong>：≥ 60 數位成熟、35–60 發展中、< 35 起步階段", v:MATURITY_LABEL[maturityState(t)], cls: maturityState(t) === "bad" ? "tv-neg" : ""});
+    return steps;
+  }
+  // 提高指數的槓桿：人時最多且未滿等級 4 的流程升一級、組織構面 +1 分各能加多少
+  function maturityLever(calc){
+    var t = calc.totals, parts = [];
+    var cand = calc.perTask.filter(function(r){ return r.level < 4 && r.weeklyHours > 0; }).sort(function(a, b){ return b.weeklyHours - a.weeklyHours; })[0];
+    if(cand && t.weeklyHours > 0) parts.push("把「" + escapeHtml(cand.name) + "」（每週 " + fmtH(cand.weeklyHours) + "）從等級 " + cand.level + " 升到 " + (cand.level + 1) + "，指數約 <b>+" + (cand.weeklyHours / t.weeklyHours * 25 * 0.6).toFixed(1) + "</b>");
+    var w = t.taskPct == null ? 1 : 0.4;
+    if(t.skillAvg < 5) parts.push("任一個組織構面提高 1 分，指數約 <b>+" + (25 / SKILLS.length * w).toFixed(1) + "</b>");
+    return parts.length ? "<strong>怎麼提高分數：</strong>" + parts.join("；") + "。人時越多的流程升級，影響越大。" : "<strong>怎麼提高分數：</strong>流程與組織構面都已達最高等級。";
+  }
   // 「數位化等級 0–4」說明框：目前流程在各等級的條數與人時
   function renderLevelLive(calc){
     var el = $("levelLive"), t = calc.totals;
@@ -1328,6 +1370,12 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
     } else {
       put("budgetLive", "", head + "，尚未設定預算。依年度節省人力成本 " + fmtMoney(t.annualValue) + "，建議首年支出約 <b>" + fmtMoney(suggest) + "</b> 以內（× 50%）。");
     }
+  }
+  function renderMaturitySteps(calc){
+    $("msSteps").innerHTML = maturitySteps(calc.totals).map(function(s){
+      return '<div class="tv-step' + (s.cls ? " " + s.cls : "") + '"><span class="n">' + s.n + '</span><span class="f">' + s.f + '</span><span class="v"' + (s.key ? ' data-ms="' + s.key + '"' : '') + '>' + s.v + '</span></div>';
+    }).join("");
+    $("msLever").innerHTML = maturityLever(calc);
   }
   function renderTimeValue(calc){
     $("tvSteps").innerHTML = timeValueSteps(calc.totals).map(function(s){
@@ -1712,7 +1760,10 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
   function renderFlow(calc){
     var t = calc.totals, list = $("flowList");
     list.innerHTML = "";
-    if(!(t.weeklyHours > 0)){ list.innerHTML = '<div class="empty-note">尚無流程人時資料。</div>'; return; }
+    if(!(t.weeklyHours > 0)){ list.innerHTML = '<div class="empty-note">尚無流程人時資料。</div>'; $("flowExplain").textContent = ""; return; }
+    var ex = flowRows(t).reduce(function(m, r){ return r[1] > m[1] ? r : m; });  // 拿占比最大的一列當例子
+    var q = ex[1] / t.weeklyHours * 100;
+    $("flowExplain").innerHTML = "公司每週流程人時不一定剛好 100 人時，這裡的「每 100 人時」是<b>比例</b>：把每週 <b>" + fmtH(t.weeklyHours) + "</b> 當成 100，占比幾 % 就是「每 100 人時裡有幾人時」。例：「" + ex[0] + "」實際 " + fmtH(ex[1]) + "，占 " + fmtPct(q) + "＝每 100 人時有 " + q.toFixed(1) + " 人時。右邊同時列出占比與實際週人時。";
     flowRows(t).forEach(function(r){
       var pct = r[1] / t.weeklyHours * 100;
       var div = document.createElement("div");
@@ -1720,6 +1771,10 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
       div.innerHTML = '<span class="flow-label">' + r[0] + '</span><span class="flow-track"><span class="flow-fill" style="width:' + Math.min(Math.abs(pct),100).toFixed(1) + '%;background:' + r[2] + ';"></span></span><span class="flow-val">' + fmtPct(pct) + '・' + r[1].toFixed(1) + ' 人時</span>';
       list.appendChild(div);
     });
+    var tot = document.createElement("div");
+    tot.className = "flow-row flow-total";
+    tot.innerHTML = '<span class="flow-label">合計</span><span></span><span class="flow-val"><b>100%・' + t.weeklyHours.toFixed(1) + ' 人時</b></span>';
+    list.appendChild(tot);
   }
 
   function alertAdvice(r){
@@ -1925,6 +1980,8 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
     check(kpiText("alerts") === ind.urgent + " 緊急／" + ind.watch + " 注意", "手工流程警示件數不一致：畫面「" + kpiText("alerts") + "」，驗算 " + ind.urgent + " 緊急／" + ind.watch + " 注意");
     var tvEl = document.querySelector('#tvSteps [data-tv="annualValue"]');
     check(tvEl && tvEl.textContent === kpiText("annualValue"), "計算步驟的年度節省人力成本與 KPI 卡片不一致");
+    var msEl = document.querySelector('#msSteps [data-ms="maturity"]');
+    check(msEl && msEl.textContent === kpiText("maturity"), "數位成熟度指數計算步驟與 KPI 卡片不一致");
     var alEl = document.querySelector('#alertLive [data-alertcount]');
     check(alEl && alEl.textContent === kpiText("alerts"), "工時與預算說明卡的手工警示件數與 KPI 卡片不一致");
     check($("alertTbody").querySelectorAll(".alert-tag").length === ind.urgent + ind.watch, "手工流程警示表列數與驗算件數不一致");
@@ -1981,6 +2038,7 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
     renderMatrix(calc);
     renderSkillPanel();
     renderTimeValue(calc);
+    renderMaturitySteps(calc);
     renderSettingsLive(calc);
     renderLevelLive(calc);
     syncComputedCells(calc);
@@ -2217,6 +2275,10 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
       timeValueSteps(t).map(function(s){ return '<tr' + (s.cls === "tv-neg" ? ' class="pr-bad"' : '') + '><td class="n" style="width:22px;">' + s.n + '</td><td>' + s.f + '</td><td class="n">' + s.v + '</td></tr>'; }).join("") +
       '</tbody></table><p class="pr-meta" style="margin-top:4px;">人力成本價值＝把省下的人時用平均人時成本換算成金額，代表這些人力轉去做更有價值的工作時值多少錢；不代表裁員或實際減少的薪資支出。</p></div>';
 
+    html += '<div class="pr-section"><h2>數位成熟度指數計算</h2><table class="pr-table"><tbody>' +
+      maturitySteps(t).map(function(s){ return '<tr' + (s.cls === "tv-neg" ? ' class="pr-bad"' : '') + '><td class="n" style="width:22px;">' + s.n + '</td><td>' + s.f + '</td><td class="n">' + s.v + '</td></tr>'; }).join("") +
+      '</tbody></table><p class="pr-meta" style="margin-top:4px;">流程占 60%（公司實際怎麼做事，營運面較客觀），組織評估占 40%（有沒有條件做，是升級的前提但較主觀）；流程分數以人時加權，避免小流程左右結果。</p></div>';
+
     var fr = flowRows(t).map(function(f){
       var pct = t.weeklyHours > 0 ? f[1] / t.weeklyHours * 100 : 0;
       return '<tr>' + td(f[0]) + td(f[1].toFixed(1) + " 人時", 1) + td(fmtPct(pct), 1) + '<td><div class="pr-bar"><i style="width:' + Math.min(Math.abs(pct), 100).toFixed(1) + '%;background:' + f[2] + ';"></i></div></td></tr>';
@@ -2229,7 +2291,7 @@ var WATERMARK_DATA_URI = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAE7
       ["手工警示門檻", "每週 " + state.alertHours + " 人時"],
       ["年度數位化預算", (state.capEnabled && state.toolBudget > 0 ? fmtMoney(state.toolBudget) + (t.overBudget ? "（已超過）" : "") : "未設定") + "；建議首年 ≤ " + fmtMoney(Math.floor(t.annualValue * 0.5 / 10000) * 10000)]
     ];
-    html += '<div class="pr-cols"><div class="pr-section"><h2>每 100 人時的去向（週）</h2><table class="pr-table"><thead><tr><th>項目</th><th>人時</th><th>占比</th><th></th></tr></thead><tbody>' + fr + '</tbody></table></div>' +
+    html += '<div class="pr-cols"><div class="pr-section"><h2>每 100 人時的去向（週，按比例換算）</h2><p class="pr-meta">「每 100 人時」是比例：以每週流程人時 ' + fmtH(t.weeklyHours) + ' 為 100%，占比即每 100 人時中有幾人時；人時欄為實際週人時。</p><table class="pr-table"><thead><tr><th>項目</th><th>人時</th><th>占比</th><th></th></tr></thead><tbody>' + fr + '</tbody></table></div>' +
       '<div class="pr-section"><h2>公司設定</h2><table class="pr-table"><tbody>' + settings.map(function(s){ return '<tr>' + td(s[0]) + td(escapeHtml(s[1]), 1) + '</tr>'; }).join("") + '</tbody></table></div></div>';
 
     var counts = {quick:0, invest:0, tidy:0, later:0};
